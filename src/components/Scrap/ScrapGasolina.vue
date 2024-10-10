@@ -1,12 +1,13 @@
 <template>
   <div class="blocks">
-    <h1
-      :style="{ color: variacionGasolina < 0 ? 'red' : 'green' }"
-    >
-      <strong>Variación de la gasolina: </strong> {{ variacionGasolina }}
+    <h1>
+      <strong>Variación del Gasolina: </strong>
+      <span :style="{ color: variacionGasolina < 0 ? 'red' : 'green' }">
+        {{ variacionGasolina }}
+      </span>
     </h1>
   </div>
-  </template>
+</template>
   
   <script>
   export default {

@@ -1,9 +1,10 @@
 <template>
   <div class="blocks">
-    <h1
-      :style="{ color: variacionGasoil < 0 ? 'red' : 'green' }"
-    >
-      <strong>Variación del Gasoil: </strong> {{ variacionGasoil }}
+    <h1>
+      <strong>Variación del Gasoil: </strong>
+      <span :style="{ color: variacionGasoil < 0 ? 'red' : 'green' }">
+        {{ variacionGasoil }}
+      </span>
     </h1>
   </div>
 </template>
