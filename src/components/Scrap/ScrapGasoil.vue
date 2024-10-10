@@ -23,6 +23,7 @@ export default {
   text-align: center;
   margin: auto; /* Centra el texto horizontalmente */
   line-height: 100px; /* Centra el texto verticalmente */
+  color: #5b4d6e;
   font-weight: 900;
   font-family: "Times New Roman", Times, serif;
   font-size: 35px;
