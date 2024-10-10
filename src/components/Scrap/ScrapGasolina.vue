@@ -1,7 +1,11 @@
 <template>
-    <div class="blocks">
-      <h1><strong>Variación de la Gasolina: </strong> {{ variacionGasolina }}</h1>
-    </div>
+  <div class="blocks">
+    <h1
+      :style="{ color: variacionGasolina < 0 ? 'red' : 'green' }"
+    >
+      <strong>Variación de la gasolina: </strong> {{ variacionGasolina }}
+    </h1>
+  </div>
   </template>
   
   <script>
@@ -22,11 +26,5 @@
     font-weight: 900;
     font-family: "Times New Roman", Times, serif;
     font-size: 35px;
-  }
-  
-  .error {
-    color: red;
-    text-align: center;
-    font-size: 16px;
   }
   </style>
