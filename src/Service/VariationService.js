@@ -5,7 +5,7 @@ export default class VariationsService {
   // Endpoint para obtener los datos del gasoil a través del servidor proxy
   async getGasoilScraped() {
     try {
-      const response = await axios.get('hafesaenergiabackend-production-006c.up.railway.app/scrape-gasoil');
+      const response = await axios.get('https://hafesaenergiabackend-production-006c.up.railway.app/scrape-gasoil');
       const gasoil = parseFloat(response.data.gasoil.replace(',', '.'));
       return gasoil;
     } catch (error) {
@@ -17,7 +17,7 @@ export default class VariationsService {
   // Endpoint para obtener los datos de la gasolina a través del servidor proxy
   async getGasolinaScraped() {
     try {
-      const response = await axios.get('hafesaenergiabackend-production-006c.up.railway.app/scrape-gasolina');
+      const response = await axios.get('https://hafesaenergiabackend-production-006c.up.railway.app/scrape-gasolina');
       const gasolina = parseFloat(response.data.gasolina.replace(',', '.'));
       console.log('Gasolina parsed:', gasolina); // Verifica la conversión
       return gasolina;
@@ -31,7 +31,7 @@ export default class VariationsService {
   // Endpoint para obtener los datos del tipo de cambio EUR/USD a través del servidor proxy
   async getTipoDeCambio() {
     try {
-      const response = await axios.get('hafesaenergiabackend-production-006c.up.railway.app/scrape-tipo-cambio');
+      const response = await axios.get('https://hafesaenergiabackend-production-006c.up.railway.app/scrape-tipo-cambio');
       const tipoCambio = parseFloat(response.data.tipoCambio.replace(',', '.'));
       return tipoCambio;
     } catch (error) {
