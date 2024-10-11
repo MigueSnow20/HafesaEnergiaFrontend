@@ -26,7 +26,8 @@ export default class VariationsService {
       throw error;
     }
   }
-
+ 
+  
   // Endpoint para obtener los datos del tipo de cambio EUR/USD a través del servidor proxy
   async getTipoDeCambio() {
     try {
