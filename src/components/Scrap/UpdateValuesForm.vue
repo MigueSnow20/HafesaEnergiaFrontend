@@ -8,7 +8,7 @@
           id="platts"
           v-model="formData.platts"
           type="number"
-          step="0.01"
+          step="0.0001"
           required
         />
       </div>
@@ -19,7 +19,7 @@
           id="ice"
           v-model="formData.ice"
           type="number"
-          step="0.01"
+          step="0.0001"
           required
         />
       </div>
@@ -30,7 +30,7 @@
           id="rbob"
           v-model="formData.rbob"
           type="number"
-          step="0.01"
+          step="0.0001"
           required
         />
       </div>
