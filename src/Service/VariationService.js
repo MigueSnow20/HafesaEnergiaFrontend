@@ -1,90 +1,155 @@
-import axios from 'axios'; // Usamos axios para hacer las solicitudes al proxy
+import axios from 'axios';
 
+const BACKEND_URL = 'https://petroxpertbackend.fly.dev';
 export default class VariationsService {
-
-  // Endpoint para obtener los datos del gasoil a través del servidor proxy
-  async getGasoilScraped() {
-    try {
-      const response = await axios.get('https://hafesaenergiabackend-production-006c.up.railway.app/scrape-gasoil');
-      const gasoil = parseFloat(response.data.gasoil.replace(',', '.'));
-      return gasoil;
-    } catch (error) {
-      console.error('Error al obtener el gasoil desde el proxy:', error);
-      throw error;
-    }
-  }
-
-  // Endpoint para obtener los datos de la gasolina a través del servidor proxy
-  async getGasolinaScraped() {
-    try {
-      const response = await axios.get('https://hafesaenergiabackend-production-006c.up.railway.app/scrape-gasolina');
-      const gasolina = parseFloat(response.data.gasolina.replace(',', '.'));
-      console.log('Gasolina parsed:', gasolina); // Verifica la conversión
-      return gasolina;
-    } catch (error) {
-      console.error('Error al obtener la gasolina desde el proxy:', error);
-      throw error;
-    }
-  }
- 
   
-  // Endpoint para obtener los datos del tipo de cambio EUR/USD a través del servidor proxy
-  async getTipoDeCambio() {
+  // Obtener datos desde el scraping
+  async getScrapedGasoil() {
     try {
-      const response = await axios.get('https://hafesaenergiabackend-production-006c.up.railway.app/scrape-tipo-cambio');
-      const tipoCambio = parseFloat(response.data.tipoCambio.replace(',', '.'));
-      return tipoCambio;
+      const response = await axios.get(`${BACKEND_URL}/scrape-gasoil`);
+      return parseFloat(response.data.gasoil);
     } catch (error) {
-      console.error('Error al obtener el tipo de cambio desde el proxy:', error);
+      console.error('❌ Error al obtener gasoil desde el scraping:', error);
+      throw error;
+    }
+  }
+
+  async getScrapedGasolina() {
+    try {
+      const response = await axios.get(`${BACKEND_URL}/scrape-gasolina`);
+      return parseFloat(response.data.gasolina);
+    } catch (error) {
+      console.error('❌ Error al obtener gasolina desde el scraping:', error);
+      throw error;
+    }
+  }
+
+  async getScrapedTipoCambio() {
+    try {
+      const response = await axios.get(`${BACKEND_URL}/scrape-tipo-cambio`);
+      return parseFloat(response.data.tipoCambio);
+    } catch (error) {
+      console.error('❌ Error al obtener tipo de cambio desde el scraping:', error);
+      throw error;
+    }
+  }
+
+  // Obtener datos desde la base de datos
+  async getLastSavedData() {
+    try {
+      const response = await axios.get(`${BACKEND_URL}/cierre-ultimo`);
+      return response.data;
+    } catch (error) {
+      console.error('❌ Error al obtener los últimos datos guardados:', error);
+      throw error;
+    }
+  }
+
+  async getDeltanwe() {
+    try {
+      const data = await this.getLastSavedData();
+      return parseFloat(data.deltanwe);
+    } catch (error) {
+      console.error('❌ Error al obtener deltanwe desde la base de datos:', error);
+      throw error;
+    }
+  }
+
+  async getDeltamed() {
+    try {
+      const data = await this.getLastSavedData();
+      return parseFloat(data.deltamed);
+    } catch (error) {
+      console.error('❌ Error al obtener deltamed desde la base de datos:', error);
+      throw error;
+    }
+  }
+
+  async getGna() {
+    try {
+      const data = await this.getLastSavedData();
+      return parseFloat(data.gna);
+    } catch (error) {
+      console.error('❌ Error al obtener gna desde la base de datos:', error);
+      throw error;
+    }
+  }
+
+  async getGnanwe() {
+    try {
+      const data = await this.getLastSavedData();
+      return parseFloat(data.gnanwe);
+    } catch (error) {
+      console.error('❌ Error al obtener gnanwe desde la base de datos:', error);
+      throw error;
+    }
+  }
+
+  async getGnamed() {
+    try {
+      const data = await this.getLastSavedData();
+      return parseFloat(data.gnamed);
+    } catch (error) {
+      console.error('❌ Error al obtener gnamed desde la base de datos:', error);
+      throw error;
+    }
+  }
+  
+
+  async getDivisa() {
+    try {
+      const data = await this.getLastSavedData();
+      return parseFloat(data.divisa);
+    } catch (error) {
+      console.error('❌ Error al obtener divisa desde la base de datos:', error);
       throw error;
     }
   }
 
   // Método que realiza todas las operaciones y cálculos
-  async getAllData({ platts, ice, rbob, tcambio }) {
+  async getAllData() {
     try {
-      // Obtener valores actualizados desde el formulario o usar valores por defecto
-      platts = platts || 716.75;
-      ice = ice || 712.50;
-      rbob = rbob || 2.10;
-      tcambio = tcambio || 1.1029;
-
-      // Scraping de gasoil, gasolina y tipo de cambio
-      const [gasoil, gasolina, tipoCambio] = await Promise.all([
-        this.getGasoilScraped(),
-        this.getGasolinaScraped(),
-        this.getTipoDeCambio(),
+      // Obtener valores desde el scraping y la base de datos
+      const [gasoil, tipoCambio, deltanwe, deltamed, divisa, gna, gasolina, gnamed, gnanwe] = await Promise.all([
+        this.getScrapedGasoil(),
+        this.getScrapedTipoCambio(),
+        this.getDeltanwe(),
+        this.getDeltamed(),
+        this.getDivisa(),
+        this.getGna(),
+        this.getScrapedGasolina(),
+        this.getGnamed(),
+        this.getGnanwe(),
       ]);
 
-      // Realizar cálculos de los valores
-      const platss_gasoleo = (platts / tcambio) * 0.845;  // Platts convertido de $/tonelada a €/m3
-      const diferencial_ice = gasoil - ice;               // Diferencial del ICE
-      const precio_gasoleo = ((platts + diferencial_ice) / tipoCambio) * 0.845; // Precio en €/m3
-      const precioGasoleoEm = (gasoil / tipoCambio) * 0.845;
-      const variacion_gasoleo = precio_gasoleo - platss_gasoleo; // Variación del gasoil
+      // Calcular cotizaciones
+      const cotizacionGasoilnwe = ((gasoil + deltanwe) * 0.845) / tipoCambio;
+      const cotizacionGasoilCierrenwe = ((gasoil + deltanwe) * 0.845) / divisa;
+      const cotizacionGasoilmed = ((gasoil + deltamed) * 0.845) / tipoCambio;
 
-      const rbob_aeuro = ((rbob / tcambio) / 3.78541) * 1000;  // RBOB de $/galón a €/m3
+      // Nueva variación del gasoil
+      const variacionGasoil = cotizacionGasoilnwe - cotizacionGasoilCierrenwe;
+
+            // Nueva variación del gasoil
+      const gna_aeuro = ((gna / divisa) / 3.78541) * 1000;  // RBOB de $/galón a €/m3
       const precio_gasolina = ((gasolina / tipoCambio) / 3.78541) * 1000;  // Precio gasolina €/m3
-      const variacion_gasolina = precio_gasolina - rbob_aeuro;  // Variación de la gasolina
+      const variacion_gasolina = precio_gasolina - gna_aeuro;  // Variación de la gasolina
 
       // Formatear los resultados a 2 decimales
       const resultado = {
-        variacionGasoil: parseFloat(variacion_gasoleo.toFixed(2)),
-        variacionGasolina: parseFloat(variacion_gasolina.toFixed(2)),
-        divisaCambio: parseFloat(tipoCambio.toFixed(4)),
-        precioGasoleoEm: parseFloat(precioGasoleoEm.toFixed(2)),
-        precioGasolinaEm: parseFloat(precio_gasolina.toFixed(2)),
-        platts: parseFloat(platts.toFixed(2)),
-        ice: parseFloat(ice.toFixed(2)),
-        rbob: parseFloat(rbob.toFixed(4)),
-        tipoCambio: parseFloat(tcambio.toFixed(4)),
+        cotizacionGasoilnwe: parseFloat(cotizacionGasoilnwe.toFixed(2)),
+        cotizacionGasoilCierrenwe: parseFloat(cotizacionGasoilCierrenwe.toFixed(2)),
+        variacionGasoil: parseFloat(variacionGasoil.toFixed(2)),
+        tipoCambio: parseFloat(tipoCambio.toFixed(4)),
         gasoilScraped: parseFloat(gasoil.toFixed(2)),
-        gasolinaScraped: parseFloat(gasolina.toFixed(4))
+        variacionGasolina: parseFloat(variacion_gasolina.toFixed(2)),
+        gasolinaScraped: parseFloat(gasolina.toFixed(2)),
+        cotizacionGasoilmed: parseFloat(cotizacionGasoilmed.toFixed(2))
       };
-      // Devolver los resultados
+
       return resultado;
     } catch (error) {
-      console.error('Error al obtener todos los datos:', error);
+      console.error('❌ Error al obtener todos los datos:', error);
       throw error;
     }
   }

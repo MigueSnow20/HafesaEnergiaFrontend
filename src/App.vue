@@ -7,110 +7,95 @@ import updateValuesForm from './components/Scrap/UpdateValuesForm.vue';
 import differentData from './components/Scrap/Data.vue';
 import VariationService from '@/Service/VariationService';
 import { ref, onMounted, onBeforeUnmount } from 'vue';
+import axios from 'axios';
+import Informe from './components/Scrap/Informe.vue';
+import Precios from './components/Scrap/Precios.vue';
 
-// Definir estado para las secciones
+// Estado de la sección actual
 const currentSection = ref('graphics');
-
-// Definir valores por defecto
-const defaultValues = {
-  platts: 716.75,
-  ice: 712.50,
-  rbob: 2.10,
-  tcambio: 1.1029
-};
-
-// Datos reactivos para los valores
-const platts = ref(defaultValues.platts);
-const ice = ref(defaultValues.ice);
-const rbob = ref(defaultValues.rbob);
-const tipoCambio = ref(defaultValues.tcambio);
-const divisaCambio = ref(null);
-const precioGasoilEm = ref(null);
-const precioGasolinaEm = ref(null);
-const gasoil = ref(null);
-const gasolina = ref(null);
-const variacionGasoil = ref(null);
-const variacionGasolina = ref(null);
-const error = ref(null);
 let intervalId = null;
 
-// Método para obtener todos los datos
-const fetchData = async () => {
-  const service = new VariationService();
+const BACKEND_URL = 'https://petroxpertbackend.fly.dev';
+// Datos reactivos para los valores de `cierre`
+const cierreData = ref({
+  ice: null,
+  deltamed: null,
+  deltanwe: null,
+  divisa: null,
+  gna: null,
+  gnanwe: null,
+  gnamed: null
+});
+
+// Datos reactivos para los valores de `cierre`
+const informeData = ref({
+  id: null,
+  texto: null,
+  fecha: null
+});
+
+// Método para obtener los últimos valores guardados en la BD
+const fetchLatestCierre = async () => {
   try {
-    const data = await service.getAllData({
-      platts: platts.value,
-      ice: ice.value,
-      rbob: rbob.value,
-      tcambio: tipoCambio.value
-    });
-    divisaCambio.value = data.divisaCambio;
-    precioGasoilEm.value = data.precioGasoleoEm;
-    precioGasolinaEm.value = data.precioGasolinaEm;
-    gasoil.value = data.gasoilScraped;
-    gasolina.value = data.gasolinaScraped;
-    variacionGasoil.value = data.variacionGasoil;
-    variacionGasolina.value = data.variacionGasolina;
-    error.value = null;
-  } catch (err) {
-    error.value = 'Error al obtener los datos';
-    console.error(err);
-  }
-};
-
-// Método para guardar valores en localStorage con timestamp
-const saveValues = (newValues) => {
-  const timestamp = new Date().getTime();
-  localStorage.setItem('customValues', JSON.stringify({ ...newValues, timestamp }));
-};
-
-// Método para cargar valores desde localStorage si son válidos
-const loadValues = () => {
-  const storedData = localStorage.getItem('customValues');
-  if (storedData) {
-    const parsedData = JSON.parse(storedData);
-    const currentTime = new Date().getTime();
-    const twentyFourHours = 24 * 60 * 60 * 1000;
-
-    // Verificar si han pasado menos de 24 horas
-    if (currentTime - parsedData.timestamp < twentyFourHours) {
-      platts.value = parsedData.platts;
-      ice.value = parsedData.ice;
-      rbob.value = parsedData.rbob;
-      tipoCambio.value = parsedData.tcambio;
-    } else {
-      localStorage.removeItem('customValues'); // Si los datos expiraron, eliminarlos
+    const response = await axios.get(`${BACKEND_URL}/cierre-ultimo`);
+    if (response.data && response.data.id) {
+      cierreData.value = { ...response.data };
+      delete cierreData.value.id;
+      delete cierreData.value.created_at;
     }
+  } catch (error) {
+    console.error("Error al obtener datos de cierre:", error);
   }
 };
 
-// Ciclos de vida de Vue
+// ✅ Instanciamos el servicio de variaciones
+const variationService = new VariationService();
+
+// ✅ Estado reactivo para almacenar los valores calculados
+const dataVariations = ref({
+});
+
+// ✅ Función para obtener los cálculos desde `VariationService`
+const fetchVariations = async () => {
+  try {
+    const result = await variationService.getAllData();
+    dataVariations.value = result;
+
+  } catch (error) {
+    console.error("Error al obtener la variación del gasoil:", error);
+  }
+};
+
+// Método para manejar la actualización de valores
+const handleUpdateValues = (newValues) => {
+  cierreData.value = { ...newValues };
+  fetchLatestCierre();
+};
+
+// Método para guardar texto
+const handleUpdateInforme = (newValues) => {
+  informeData.value = { ...newValues };
+  fetchLatestCierre();
+};
+
+// Cargar valores al inicio
 onMounted(() => {
-  loadValues(); // Cargar valores almacenados si los hay
-  fetchData();  // Obtener datos desde el servidor
-  
-  // Actualizar datos cada 5 segundos
+  fetchLatestCierre();
+  fetchVariations();
+  // Establecer intervalo de actualización cada 5s
   intervalId = setInterval(() => {
-    fetchData();
+    fetchVariations();
+    fetchLatestCierre();
   }, 5000);
 });
 
+// Detener la actualización automática al desmontar el componente
 onBeforeUnmount(() => {
   if (intervalId) {
     clearInterval(intervalId);
+    console.log("⏹ Intervalo detenido.");
   }
 });
-
-// Función para manejar la actualización de valores del formulario
-const handleUpdateValues = (newValues) => {
-  platts.value = newValues.platts;
-  ice.value = newValues.ice;
-  rbob.value = newValues.rbob;
-  tipoCambio.value = newValues.tcambio;
-
-  saveValues(newValues);  // Guardar nuevos valores en localStorage
-  fetchData();            // Recalcular datos
-};
 
 // Función para cambiar la sección
 const changeSection = (section) => {
@@ -121,54 +106,43 @@ const changeSection = (section) => {
 <template>
   <navBar />
 
-  <!-- Botones de navegación -->
   <div class="button-container">
     <button class="nav-button" @click="changeSection('graphics')">Mostrar Gráficos y Variaciones</button>
     <button class="nav-button" @click="changeSection('differentData')">Mostrar Datos</button>
     <button class="nav-button" @click="changeSection('form')">Mostrar Formulario</button>
+    <button class="nav-button" @click="changeSection('informe')">Informe Diario</button>
   </div>
 
-  <!-- Sección de gráficos y variaciones -->
   <div v-if="currentSection === 'graphics'">
     <h2 class="section-title">Gráficos y Variaciones</h2>
     <graphics />
     <div class="blocks">
       <div class="gas-container">
-        <ScrapGasoil :gasoil="gasoil" :variacionGasoil="variacionGasoil" />
+        <ScrapGasoil :variacionGasoil="dataVariations.variacionGasoil" />
       </div>
       <div class="gas-container">
-        <ScrapGasolina :gasolina="gasolina" :variacionGasolina="variacionGasolina" />
+        <ScrapGasolina :variacionGasolina="dataVariations.variacionGasolina"/>
       </div>
     </div>
-  </div>
+    <br>
+    <br>
+    <Precios :dataVariations="dataVariations" />
 
-  <!-- Sección de datos adicionales -->
+  </div>
   <div v-if="currentSection === 'differentData'">
     <h2 class="section-title">Datos Adicionales</h2>
-    <differentData
-      :platts="platts"
-      :ice="ice"
-      :rbob="rbob"
-      :tipoCambio="tipoCambio"
-      :divisaCambio="divisaCambio"
-      :precioGasoilEm="precioGasoilEm"
-      :precioGasolinaEm="precioGasolinaEm"
-      :gasoleo="gasoil"
-      :gasolina="gasolina"
-    />
+    <differentData v-bind="cierreData" />
   </div>
 
-  <!-- Sección del formulario -->
   <div v-if="currentSection === 'form'">
-    <h2 class="section-title">Actualizar Valores</h2>
-    <updateValuesForm
-      :initialPlatts="platts"
-      :initialIce="ice"
-      :initialRbob="rbob"
-      :initialTcambio="tipoCambio"
-      @update-values="handleUpdateValues"
-    />
+    <h2 class="section-title">Cambiar Valores de Cierre    </h2>
+    <updateValuesForm v-bind="cierreData" @update-values="handleUpdateValues" />
   </div>
+
+<div v-if="currentSection === 'informe'">
+  <h2 class="section-title">Daniel Nieva - PETROXPERT  </h2>
+  <Informe v-bind="informeData" @update-values="handleUpdateInforme" />
+</div>
 </template>
 
 <style scoped>
@@ -189,7 +163,7 @@ body {
 .nav-button {
   padding: 14px 30px;
   font-size: 18px;
-  background-color: #5b4d6e;
+  background-color: #152f52;
   color: white;
   border: none;
   border-radius: 5px;
@@ -198,14 +172,14 @@ body {
 }
 
 .nav-button:hover {
-  background-color: #43385e;
+  background-color: #7b808a;
 }
 
 /* Títulos de las secciones */
 .section-title {
   text-align: center;
   font-size: 24px;
-  color: #5b4d6e;
+  color: #152f52;
   margin-bottom: 20px;
 }
 
@@ -221,10 +195,21 @@ body {
   width: 100%;
 }
 
+.blocks2 {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 450px;
+  background-color: #ffffff;
+  padding: 10px;
+  border-radius: 10px;
+  width: 100%;
+}
+
 .gas-container {
   flex: 1;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  background-color: #5b4d6e;;
+  box-shadow: 0 4px 8px #152f52;
+  background-color: #152f52cb;
   padding: 10px;
   border-radius: 10px;
 }

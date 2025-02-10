@@ -31,7 +31,7 @@
 .blocks h1 {
     text-align: center;
     line-height: 100px; /* Centra el texto verticalmente */
-    color: #5b4d6e;
+    color: #152f52;
     font-weight: 900;
     font-family: "Times New Roman", Times, serif;
     font-size: 35px;
@@ -50,7 +50,7 @@
 .vertical-line {
     width: 1px; /* Grosor de la línea */
     height: 100%; /* Altura de la línea igual al contenedor */
-    background-color: #5b4d6e; /* Color de la línea */
+    background-color: #152f52cb; /* Color de la línea */
     position: absolute;
     top: 0;
     bottom: 0;

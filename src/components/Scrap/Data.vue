@@ -36,7 +36,7 @@
           </tr>
           <tr>
             <td><strong>RBOB Gasolina $/galón:</strong></td>
-            <td>{{ rbob }}</td>
+            <td>{{ gna }}</td>
           </tr>
           <tr>
             <td><strong>Tipo de cambio:</strong></td>
@@ -70,7 +70,7 @@ export default {
   props: {
     platts: Number,
     ice: Number,
-    rbob: Number,
+    gna: Number,
     tipoCambio: Number,
     divisaCambio: Number,
     precioGasoilEm: Number,
@@ -88,8 +88,10 @@ export default {
   gap: 130px; /* Aumentar el espacio entre las tablas */
   padding: 40px;
   flex-wrap: nowrap; /* Evitar que las tablas se apilen si hay espacio suficiente */
-  background-color: #e9e9e9; /* Fondo gris claro */
+  background-color: #152f52cb; /* Fondo gris claro */
   border-radius: 15px; /* Bordes redondeados para la sección completa */
+  max-width: 85%; /* Limita el ancho del contenedor */
+  margin: 0 auto; /* Centra el contenedor en la página */
 }
 
 .table-section {
@@ -111,7 +113,7 @@ export default {
 
 .table-title {
   text-align: center;
-  color: #5b4d6e;
+  color: #ffff;
   font-family: "Times New Roman", Times, serif;
   margin-bottom: 15px; /* Añadir más separación entre el título y la tabla */
   font-size: 1.4em; /* Aumentar el tamaño de los títulos */
@@ -125,7 +127,7 @@ table {
 td {
   padding: 12px; /* Aumentar el tamaño del padding */
   font-size: 1.2em; /* Aumentar el tamaño de la fuente */
-  color: #5b4d6e;
+  color: #152f52;
   font-weight: 900;
 }
 
@@ -138,7 +140,7 @@ td:nth-child(even) {
 }
 
 tr {
-  border-bottom: 1px solid #5b4d6e;
+  border-bottom: 1px solid #152f52cb;
 }
 
 @media (max-width: 1024px) {

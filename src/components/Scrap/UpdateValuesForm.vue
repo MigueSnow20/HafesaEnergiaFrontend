@@ -1,45 +1,28 @@
 <template>
   <div class="form-container">
-    <h2>Cambiar Valores de Platts, ICE, RBOB y Tipo de Cambio</h2>
     <form @submit.prevent="submitForm">
-      <div class="form-group">
-        <label for="platts">Platts Gasóleo $/tonelada:</label>
+      <!-- Campos para la tabla cierre -->
+      <h2 class="section-title">Datos de Cierre</h2>
+      <div class="form-group" v-for="(label, key) in cierreLabels" :key="key">
+        <label :for="key">{{ label }}:</label>
         <input
-          id="platts"
-          v-model="formData.platts"
+          :id="key"
+          v-model="formData.cierre[key]"
           type="number"
           step="0.0001"
           required
         />
       </div>
 
-      <div class="form-group">
-        <label for="ice">ICE Gasóleo $/tonelada:</label>
-        <input
-          id="ice"
-          v-model="formData.ice"
-          type="number"
-          step="0.0001"
-          required
-        />
-      </div>
+      <div class="separator"></div> <!-- Barra horizontal fina -->
 
-      <div class="form-group">
-        <label for="rbob">RBOB Gasolina $/galón:</label>
+      <!-- Campos para la tabla precios_ciudades -->
+      <h2 class="section-title">Primas por Ciudad</h2>
+      <div class="form-group" v-for="(label, key) in preciosLabels" :key="key">
+        <label :for="key">{{ label }}:</label>
         <input
-          id="rbob"
-          v-model="formData.rbob"
-          type="number"
-          step="0.0001"
-          required
-        />
-      </div>
-
-      <div class="form-group">
-        <label for="tcambio">Tipo de Cambio EUR/USD:</label>
-        <input
-          id="tcambio"
-          v-model="formData.tcambio"
+          :id="key"
+          v-model="formData.precios[key]"
           type="number"
           step="0.0001"
           required
@@ -52,91 +35,199 @@
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
-  props: {
-    initialPlatts: Number,
-    initialIce: Number,
-    initialRbob: Number,
-    initialTcambio: Number
-  },
   data() {
     return {
+      // Datos del formulario
       formData: {
-        platts: this.initialPlatts || 716.75,
-        ice: this.initialIce || 712.50,
-        rbob: this.initialRbob || 2.10,
-        tcambio: this.initialTcambio || 1.1029
+        cierre: {
+          ice: null,
+          deltamed: null,
+          deltanwe: null,
+          divisa: null,
+          gna: null,
+          gnanwe: null,
+          gnamed: null
+        },
+        precios: {
+          gasoilvigo: null,
+          gasolinafirstvigo: null,
+          gasolinasecondvigo: null,
+          gasoilhuelva: null,
+          gasolinafirsthuelva: null,
+          gasolinasecondhuelva: null,
+          gasoilmerida: null
+        }
+      },
+
+      // Datos para el informe
+      informeTexto: "",
+
+      // Últimos informes recuperados de la BD
+      informes: [],
+
+      // Etiquetas de los campos
+      cierreLabels: {
+        ice: "ICE Gasóleo",
+        deltamed: "Delta MED",
+        deltanwe: "Delta NWE",
+        divisa: "Divisa",
+        gna: "GNA",
+        gnanwe: "GNA NWE",
+        gnamed: "GNA MED"
+      },
+      preciosLabels: {
+        gasoilvigo: "Gasoil Vigo",
+        gasolinafirstvigo: "Gasolina 1ª Vigo",
+        gasolinasecondvigo: "Gasolina 2ª Vigo",
+        gasoilhuelva: "Gasoil Huelva",
+        gasolinafirsthuelva: "Gasolina 1ª Huelva",
+        gasolinasecondhuelva: "Gasolina 2ª Huelva",
+        gasoilmerida: "Gasoil Mérida"
       }
     };
   },
   methods: {
-    submitForm() {
-      // Guardar en localStorage los valores
-      localStorage.setItem('platts', this.formData.platts);
-      localStorage.setItem('ice', this.formData.ice);
-      localStorage.setItem('rbob', this.formData.rbob);
-      localStorage.setItem('tcambio', this.formData.tcambio);
+    // Obtener los últimos datos guardados en la BD
+    async fetchLatestValues() {
+      try {
+        const cierreResponse = await axios.get("https://petroxpertbackend.fly.dev/cierre-ultimo");
+        console.log(cierreResponse);
+        if (cierreResponse.data && cierreResponse.data.id) {
+          Object.keys(cierreResponse.data).forEach(key => {
+            if (key !== "id" && key !== "created_at") {
+              cierreResponse.data[key] = parseFloat(cierreResponse.data[key]);
+            }
+          });
+          this.formData.cierre = { ...cierreResponse.data };
+          delete this.formData.cierre.id;
+          delete this.formData.cierre.created_at;
+        }
 
-      // Emitir evento con los datos del formulario
-      this.$emit('update-values', { ...this.formData });
-      console.log('Valores actualizados y guardados en localStorage:', this.formData);
+        const preciosResponse = await axios.get("https://petroxpertbackend.fly.dev/precios-ciudades-ultimo");
+        if (preciosResponse.data && preciosResponse.data.id) {
+          Object.keys(preciosResponse.data).forEach(key => {
+            if (key !== "id" && key !== "created_at") {
+              this.formData.precios[key] = parseFloat(preciosResponse.data[key]);
+            }
+          });
+        }
+      } catch (error) {
+        console.error("❌ Error al obtener los datos de la BD:", error);
+      }
+    },
+    // Guardar los valores en la BD
+    async submitForm() {
+      try {
+        await axios.post("https://petroxpertbackend.fly.dev/insert-cierre", this.formData.cierre);
+        await axios.post("https://petroxpertbackend.fly.dev/insert-precios-ciudades", this.formData.precios);
+        alert("✅ Datos guardados correctamente");
+      } catch (error) {
+        console.error("❌ Error al guardar en la BD:", error);
+        alert("Error al guardar los datos");
+      }
     }
+  },
+  mounted() {
+    this.fetchLatestValues();
   }
 };
 </script>
 
 <style scoped>
 .form-container {
-  background-color: #f9f9f9;
+  background-color: #152f52cb;
   padding: 20px;
   max-width: 600px;
   margin: 0 auto;
   border-radius: 10px;
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
 }
-
-h2 {
+.separator {
+  width: 100%;
+  height: 2px;
+  background-color: rgba(255, 255, 255, 0.5);
+  margin: 0 auto 15px auto;
+  border-radius: 2px;
+}
+.section-title {
+  color: white;
   text-align: center;
-  color: #5b4d6e;
-  font-family: "Times New Roman", Times, serif;
+  margin-bottom: 15px;
+  margin-left: 175px;
+  font-size: 20px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.section-title2 {
+  color: white;
+  text-align: center;
+  margin-bottom: 15px;
+  margin-left: 100px;
+  font-size: 20px;
+  font-weight: bold;
+  text-transform: uppercase;
 }
 
 .form-group {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 15px;
 }
 
 label {
   flex: 1;
   font-weight: bold;
-  color: #333;
-  margin-right: 20px;
+  color: #ffffff;
 }
 
 input {
   flex: 2;
-  padding: 10px;
+  padding: 8px;
   border: 1px solid #ddd;
   border-radius: 5px;
-  font-size: 1.1em;
 }
 
 button {
   display: block;
   width: 100%;
   padding: 10px;
-  background-color: #5b4d6e;
+  background-color: #152f52;
   color: white;
   border: none;
   border-radius: 5px;
   cursor: pointer;
   font-size: 1.2em;
-  margin-top: 20px;
 }
 
 button:hover {
-  background-color: #4a3d5d;
+  background-color: #34373b;
+}
+
+.form-container {
+  background-color: #152f52cb;
+  padding: 20px;
+  max-width: 600px;
+  margin: 0 auto;
+  border-radius: 10px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+}
+.separator {
+  width: 100%;
+  height: 2px;
+  background-color: rgba(255, 255, 255, 0.5);
+  margin: 0 auto 15px auto;
+  border-radius: 2px;
+}
+.section-title {
+  color: white;
+  text-align: center;
+  margin-bottom: 15px;
+  font-size: 20px;
+  font-weight: bold;
 }
 </style>

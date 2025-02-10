@@ -1,11 +1,6 @@
 <template>
-  <div class="blocks">
-    <h1>
-      <strong>Variación del Gasoil: </strong>
-      <span :style="{ color: variacionGasoil < 0 ? 'red' : 'green' }">
-        {{ variacionGasoil }}
-      </span>
-    </h1>
+  <div class="blocks2">
+    <h1><strong>Variación del Gasoil: </strong> {{ variacionGasoil }}</h1>
   </div>
 </template>
 
@@ -23,9 +18,15 @@ export default {
   text-align: center;
   margin: auto; /* Centra el texto horizontalmente */
   line-height: 100px; /* Centra el texto verticalmente */
-  color: #5b4d6e;
+  color: #152f52;
   font-weight: 900;
   font-family: "Times New Roman", Times, serif;
   font-size: 35px;
+}
+
+.error {
+  color: red;
+  text-align: center;
+  font-size: 16px;
 }
 </style>

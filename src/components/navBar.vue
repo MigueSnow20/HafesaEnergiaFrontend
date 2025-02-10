@@ -1,63 +1,30 @@
 <template>
   <nav class="navbar">
-    <div class="navbar-logo">
-      <img :src="logoSrc" alt="Logo" class="logo">
-    </div>
-
+    <div class="navbar-title">P E T R O X P E R T</div>
   </nav>
 </template>
 
-<script>
-import logo from '@/assets/logo.svg';
-
-export default {
-  data() {
-    return {
-      logoSrc: logo
-    };
-  }
-};
-</script>
-
 <style scoped>
 .navbar {
-  background-color: #5b4d6e;
-  padding: 1rem;
-  position: fixed;
+  position: fixed; /* Fijar la navbar en la parte superior */
   top: 0;
   left: 0;
   width: 100%;
-  z-index: 1000;
-  height: 80px; /* Aumenta la altura aquí */
+  height: 80px;
+  background-color: rgba(21, 47, 82, 0.9); /* Color más sólido con opacidad */
+  backdrop-filter: blur(10px); /* Agrega desenfoque de fondo */
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3); /* Sombra para diferenciar del fondo */
   display: flex;
+  justify-content: center; /* Centrar el texto */
   align-items: center;
-  margin-bottom: 4rem;
-}
-.navbar-logo {
-  margin-right: 20px;
+  z-index: 1000;
 }
 
-.logo {
-  height: 40px; /* Ajusta el tamaño según tus necesidades */
-}
-
-.navbar-menu {
-  list-style-type: none;
-  display: flex;
-  margin: 0;
-  padding: 0;
-}
-
-.navbar-item {
-  margin-right: 20px;
-}
-
-.navbar-item a {
-  color: white;
-  text-decoration: none;
-}
-
-.navbar-item a:hover {
-  text-decoration: underline;
+.navbar-title {
+  font-size: 2.5rem; /* Texto grande */
+  font-weight: bold;
+  color: white; /* Texto blanco */
+  letter-spacing: 10px; /* Espaciado entre letras */
+  text-transform: uppercase; /* Asegurar mayúsculas */
 }
 </style>
