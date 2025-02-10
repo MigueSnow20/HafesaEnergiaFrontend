@@ -108,7 +108,6 @@ const changeSection = (section) => {
 
   <div class="button-container">
     <button class="nav-button" @click="changeSection('graphics')">Mostrar Gráficos y Variaciones</button>
-    <button class="nav-button" @click="changeSection('differentData')">Mostrar Datos</button>
     <button class="nav-button" @click="changeSection('form')">Mostrar Formulario</button>
     <button class="nav-button" @click="changeSection('informe')">Informe Diario</button>
   </div>
@@ -129,11 +128,6 @@ const changeSection = (section) => {
     <Precios :dataVariations="dataVariations" />
 
   </div>
-  <div v-if="currentSection === 'differentData'">
-    <h2 class="section-title">Datos Adicionales</h2>
-    <differentData v-bind="cierreData" />
-  </div>
-
   <div v-if="currentSection === 'form'">
     <h2 class="section-title">Cambiar Valores de Cierre    </h2>
     <updateValuesForm v-bind="cierreData" @update-values="handleUpdateValues" />
