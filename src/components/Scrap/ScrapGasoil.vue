@@ -1,6 +1,6 @@
 <template>
   <div class="blocks2">
-    <h1><strong>Variación del Gasoil: </strong> {{ variacionGasoil }}</h1>
+    <h1><strong>Variación del Gasoil: </strong> {{ variacionGasoil }} €/m³</h1>
   </div>
 </template>
 
