@@ -21,24 +21,24 @@
           <tbody>
             <tr>
               <td class="terminales">CLH VIGO</td>
-              <td>{{ dataVariations.cotizacionGasoilnwe + formData.precios.gasoilvigo }}</td>
-              <td>{{ (dataVariations.cotizacionGasoilnwe + formData.precios.gasoilvigo) + 1.5 }}</td>
-              <td>{{ (dataVariations.variacionGasolina + formData.cierre.gnanwe + formData.precios.gasolinafirstvigo).toFixed(2) }}</td>
-              <td>{{ ((dataVariations.variacionGasolina + formData.cierre.gnanwe + formData.precios.gasolinafirstvigo) + 1.5).toFixed(2) }}</td>
-              <td>{{ (dataVariations.variacionGasolina + formData.cierre.gnanwe + formData.precios.gasolinasecondvigo).toFixed(2) }}</td>
+              <td>{{ dataVariations.cotizacionGasoilnwe + formData.precios.gasoilvigo }} €/m³</td>
+              <td>{{ (dataVariations.cotizacionGasoilnwe + formData.precios.gasoilvigo) + 1.5 }} €/m³</td>
+              <td>{{ (dataVariations.variacionGasolina + formData.cierre.gnanwe + formData.precios.gasolinafirstvigo).toFixed(2) }} €/m³</td>
+              <td>{{ ((dataVariations.variacionGasolina + formData.cierre.gnanwe + formData.precios.gasolinafirstvigo) + 1.5).toFixed(2) }} €/m³</td>
+              <td>{{ (dataVariations.variacionGasolina + formData.cierre.gnanwe + formData.precios.gasolinasecondvigo).toFixed(2) }} €/m³</td>
             </tr>
             <tr>
               <td class="terminales">CLH HUELVA</td>
-              <td>{{ dataVariations.cotizacionGasoilmed + formData.precios.gasoilhuelva }}</td>
-              <td>{{ (dataVariations.cotizacionGasoilmed + formData.precios.gasoilhuelva) + 1.5 }}</td>
-              <td>{{ (dataVariations.variacionGasolina + formData.cierre.gnamed + formData.precios.gasolinafirsthuelva).toFixed(2) }}</td>
-              <td>{{ ((dataVariations.variacionGasolina + formData.cierre.gnamed + formData.precios.gasolinafirsthuelva) + 1.5).toFixed(2) }}</td>
-              <td>{{ (dataVariations.variacionGasolina + formData.cierre.gnamed + formData.precios.gasolinasecondhuelva).toFixed(2) }}</td>
+              <td>{{ dataVariations.cotizacionGasoilmed + formData.precios.gasoilhuelva }} €/m³</td>
+              <td>{{ (dataVariations.cotizacionGasoilmed + formData.precios.gasoilhuelva) + 1.5 }} €/m³</td>
+              <td>{{ (dataVariations.variacionGasolina + formData.cierre.gnamed + formData.precios.gasolinafirsthuelva).toFixed(2) }} €/m³</td>
+              <td>{{ ((dataVariations.variacionGasolina + formData.cierre.gnamed + formData.precios.gasolinafirsthuelva) + 1.5).toFixed(2) }} €/m³</td>
+              <td>{{ (dataVariations.variacionGasolina + formData.cierre.gnamed + formData.precios.gasolinasecondhuelva).toFixed(2) }} €/m³</td>
             </tr>
             <tr>
               <td class="terminales">CLH MÉRIDA</td>
-              <td>{{ dataVariations.cotizacionGasoilmed + formData.precios.gasoilmerida }}</td>
-              <td>{{ (dataVariations.cotizacionGasoilmed + formData.precios.gasoilmerida) + 1.5 }}</td>
+              <td>{{ dataVariations.cotizacionGasoilmed + formData.precios.gasoilmerida }} €/m³</td>
+              <td>{{ (dataVariations.cotizacionGasoilmed + formData.precios.gasoilmerida) + 1.5 }} €/m³</td>
               <td>-</td> <!-- No hay datos de gasolina para Mérida -->
               <td>-</td>
               <td>-</td>
