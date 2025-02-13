@@ -182,7 +182,7 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 450px;
+  gap: 425px;
   background-color: white;
   padding: 10px;
   border-radius: 10px;

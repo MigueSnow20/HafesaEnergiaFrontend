@@ -14,10 +14,13 @@ export default defineConfig({
   },
   build: {
     outDir: 'dist', // Asegúrate de que Vercel use la carpeta dist
+    chunkSizeWarningLimit: 600, // Opcional: Aumenta el límite si sigue la advertencia
     rollupOptions: {
       output: {
-        manualChunks: {
-          // Opcional: Para dividir bibliotecas más grandes en chunks separados
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            return 'vendor'; // Mueve dependencias grandes a un chunk separado
+          }
         }
       }
     }

@@ -11,7 +11,7 @@ export default {
     variacionGasolina: Number,
   },
 };
-</script>s
+</script>
 
 <style scoped>
 .blocks h1 {
