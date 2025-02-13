@@ -106,11 +106,21 @@ export default class VariationsService {
     }
   }
 
+  async getIce() {
+    try {
+      const data = await this.getLastSavedData();
+      return parseFloat(data.ice);
+    } catch (error) {
+      console.error('❌ Error al obtener divisa desde la base de datos:', error);
+      throw error;
+    }
+  }
+
   // Método que realiza todas las operaciones y cálculos
   async getAllData() {
     try {
       // Obtener valores desde el scraping y la base de datos
-      const [gasoil, tipoCambio, deltanwe, deltamed, divisa, gna, gasolina, gnamed, gnanwe] = await Promise.all([
+      const [gasoil, tipoCambio, deltanwe, deltamed, divisa, gna, gasolina, gnamed, gnanwe, ice] = await Promise.all([
         this.getScrapedGasoil(),
         this.getScrapedTipoCambio(),
         this.getDeltanwe(),
@@ -120,11 +130,12 @@ export default class VariationsService {
         this.getScrapedGasolina(),
         this.getGnamed(),
         this.getGnanwe(),
+        this.getIce(),
       ]);
 
       // Calcular cotizaciones
       const cotizacionGasoilnwe = ((gasoil + deltanwe) * 0.845) / tipoCambio;
-      const cotizacionGasoilCierrenwe = ((gasoil + deltanwe) * 0.845) / divisa;
+      const cotizacionGasoilCierrenwe = ((ice + deltanwe) * 0.845) / divisa;
       const cotizacionGasoilmed = ((gasoil + deltamed) * 0.845) / tipoCambio;
 
       // Nueva variación del gasoil
