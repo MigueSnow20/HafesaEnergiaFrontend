@@ -137,7 +137,7 @@ export default class VariationsService {
       const cotizacionGasoilnwe = ((gasoil + deltanwe) * 0.845) / tipoCambio;
       const cotizacionGasoilCierrenwe = ((ice + deltanwe) * 0.845) / divisa;
       const cotizacionGasoilmed = ((gasoil + deltamed) * 0.845) / tipoCambio;
-
+ 
       // Nueva variación del gasoil
       const variacionGasoil = cotizacionGasoilnwe - cotizacionGasoilCierrenwe;
 
